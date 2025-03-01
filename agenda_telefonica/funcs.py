@@ -10,7 +10,7 @@ def adicionar_contato(agenda_telefonica):
     erro = True
     while erro:
         numero = input('Número: ')
-        if validador_numero(numero):
+        if validador_numero(numero): 
             contato['Número'] = numero 
             erro = False
         else:
