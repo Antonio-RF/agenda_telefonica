@@ -1,45 +1,68 @@
 # 1.1 Validador de infos passadas
 
 def validador_numero(numero):
-    # Conferindo se é um número válido.
+    # Conferindo se é um número válido:
     #   1. Ter somente dígitos.
     #   2. Ter EXATAMENTE 11 números, considerando somente números do Brasil.
     return numero.isdigit() and len(str(numero)) == 11 
 
 def validador_email(email):
-    return '@' in email and '.' in email.split('@')[-1] 
+    # Conferindo se é um email válido:
+    #   1. ter o "@" inserido.
+    #   2. ter ao menos um dos gTLD OU ccTLD mais comuns que existem.
+    common_gtld = [".com", ".org", ".net", ".edu", ".gov", ".mil", ".int"]
+    common_cctld = [".br", ".us", ".uk",".ca", ".au", ".de", ".fr", ".jp", ".cn", ".in"]
+
+    confere = False
+    # Confere se está na lista 'common_gtld'.
+    for gtld in common_gtld:
+        if gtld in email:
+            confere = True
+            break
+    if not confere:
+        # Confere se está na lista 'common_cctld'.
+        for cctld in common_cctld:
+            if cctld in email:
+                confere = True
+                break
+    
+    return '@' in email and confere
 
 ######
 
 # 1. Adicionar contato
 
 def adicionar_contato(agenda_telefonica):
+    contato = {}
     print('\n--- Adicionando Contato ---')
-    nome = input('Nome: ').title()
-    contato = {}  
+    nome = input('Nome: ').title()  
 
-    erro = True
-    while erro:
+    # Loop para conferir se o número é válido.
+    erro1 = True
+    while erro1:
         numero = input('Número: ')
         if validador_numero(numero): 
             contato['Número'] = numero 
-            erro = False
+            erro1 = False
         else:
-            print('\n\U000026A0 O número celular deve conter apenas dígitos e ter exatamente 11 caracteres(DDD+Número).\n')
-            print('Exemplo de entrada: 41999999999')
+            print('\n\U000026A0 O número celular deve conter apenas dígitos e ter exatamente 11 caracteres(DDD+Número).')
+            print('Exemplo de entrada esperada: 41999999999\n')
 
-
-    erro = True
-    while erro:
+    # Loop para conferir se o email é válido.
+    erro2 = True
+    while erro2:
         email = input('E-mail: ').lower()
         if validador_email(email):
             contato['E-mail'] = email 
-            erro = False
+            erro2 = False
         else:
             print('\n\U000026A0 E-mail inválido!')
+            print('Exemplo de entrada esperada: meuexemplo@gmail.com\n')
 
-    agenda_telefonica[nome] = contato 
-    print(f'\n\U00002705 Contato {nome} adicionado com sucesso!')
+    agenda_telefonica[nome] = contato
+    print("\n==============================================") 
+    print(f'\U00002705 Contato {nome} adicionado com sucesso!')
+    print("==============================================\n")
 
 
 
@@ -48,40 +71,76 @@ def adicionar_contato(agenda_telefonica):
 
 # 2. Alterar contato
 
-def alterar_contato(agenda):
+def alterar_contato(agenda_telefonica):
     print('\n--- Alterar Contato ---')  
     print('Qual contato deseja alterar?')
     contato = input('Contato: ').title()
 
-    if contato not in agenda:
+    if contato not in agenda_telefonica:
         print('\n\U000026A0 Atenção! Contato não encontrado na agenda.')
         return 
     
-    contato_atual = agenda[contato]
-    novo_nome = input('Nome atualizado: ').title()
+    # Biblioteca a qual vou modificar.
+    contato_atual = agenda_telefonica[contato]
 
-    erro = True
-    while erro:
-        numero = input('Número atualizado: ')
-        if validador_numero(numero):
-            contato_atual['Número celular'] = numero
-            erro = False
-        else:
-            print('\n\U000026A0 Atenção! O número celular deve conter apenas dígitos.')
 
-    erro = True
-    while erro:
-        email = input('E-mail atualizado: ').lower()
-        if validador_email(email):
-            contato_atual['E-mail'] = email  
-            erro = False
-        else:
-            print('\n\U000026A0 Atenção! E-mail inválido!')
+    # Conferindo se a pessoa deseja mudar o nome do contato.
+    opcao_nome = input('Você deseja atualizar o nome ?(s/n)\n')
+    while (opcao_nome != 's' and opcao_nome != 'n'):
+        print('Entrada inválida. Por favor, digite somente "s" ou "n"\n')
+        opcao_nome = input('Você deseja atualizar o nome ?(s/n)\n')
+    if opcao_nome == 's':
+        novo_nome = input('Nome atualizado: ').title()
 
-    agenda.pop(contato) 
-    agenda[novo_nome] = contato_atual  
-    
-    print(f'\n\U00002705 Contato {novo_nome} atualizado com sucesso!')
+        
+    # Conferindo se a pessoa deseja mudar o número do contato.
+    opcao_numero = input('Você deseja atualizar o número ?(s/n)\n')
+    while (opcao_numero != 's' and opcao_numero != 'n'):
+        print('Entrada inválida. Por favor, digite somente "s" ou "n"\n')
+        opcao_numero = input('Você deseja atualizar o número ?(s/n)\n')    
+    if opcao_numero == 's':    
+        # Loop para conferir se o número é válido.
+        erro1 = True
+        while erro1:
+            numero = input('Número atualizado: ')
+            if validador_numero(numero):
+                # Se não mudou o nome do contato, deve-se apagar o número antigo.
+                if opcao_nome == 'n':
+                    contato_atual.pop('Número', None)
+                contato_atual['Número:'] = numero
+                erro1 = False
+            else:
+                print('\n\U000026A0 Atenção! O número celular deve conter apenas dígitos.')
+
+
+    # Conferindo se a pessoa deseja mudar o email do contato.
+    opcao_email = input('Você deseja atualizar o email ?(s/n)\n')
+    while (opcao_email != 's' and opcao_email != 'n'):
+        print('Entrada inválida. Por favor, digite somente "s" ou "n"\n')
+        opcao_email = input('Você deseja atualizar o email ?(s/n)\n')
+    if opcao_email == 's':
+        # Loop para conferir se o email é válido.    
+        erro2 = True
+        while erro2:
+            email = input('E-mail atualizado: ').lower()
+            if validador_email(email):
+                # Se não mudou o nome do contato, deve-se apagar o email antigo.
+                if opcao_nome == 'n':
+                    contato_atual.pop('E-mail', None)
+                contato_atual['E-mail:'] = email  
+                erro2 = False
+            else:
+                print('\n\U000026A0 Atenção! E-mail inválido!')
+
+    # Se ele modificou o nome, eu crio um novo contato com as informações novas (mesmo que ele tenha mudado apenas o nome).
+    if opcao_nome == 's':
+        agenda_telefonica.pop(contato) 
+        agenda_telefonica[novo_nome] = contato_atual
+        print(f'\n\U00002705 Contato {novo_nome} atualizado com sucesso!')
+    # Se ele não modificou o nome, eu somente sobreescrevo as informações novas nas antigas.
+    else:
+        agenda_telefonica[contato] = contato_atual
+        print(f'\n\U00002705 Contato {contato} atualizado com sucesso!')
 
 
 
@@ -90,37 +149,31 @@ def alterar_contato(agenda):
 
 # 3. Remover contato
 
-def remover_contato(agenda):
+def remover_contato(agenda_telefonica):
     print('\n--- Removendo Contato ---')
-    excluir_contato = True
 
-    while excluir_contato:
-        print('Qual contato deseja excluir?')
-        contato = input('Contato: ').title()
+    print('Qual contato deseja excluir?')
+    contato = input('Contato: ').title()
 
-        if contato not in agenda:
-            print('\U000026A0 O contato informado não está listado na agenda')
+    if contato not in agenda_telefonica:
+        print('\U000026A0 O contato informado não está listado na agenda')
+        return
+    else:
+        decisao = input(f'\nConfirma a exclusão de {contato}?(s/n): ').lower()
+
+        while (decisao != 's' and decisao != 'n'):
+            print('Entrada inválida. Por favor, digite somente "s" ou "n"\n')
+            decisao = input('Você deseja atualizar o nome ?(s/n)\n')
+
+        if decisao == 's':
+            del agenda_telefonica[contato]
+            print("\n===================================================================") 
+            print(f'\U00002705 Exclusão do contato {contato} realizada com sucesso!')
+            print("===================================================================\n")
         else:
-            decisao = input(f'\nConfirma a exclusão de {contato}?(s/n): ').lower()
-
-            opcoes_validas = {'s', 'n'}
-
-            if decisao in opcoes_validas:
-                if decisao == 's':
-                    del agenda[contato]
-                    print(f'\n\U00002705 Exclusão do contato {contato} realizada com sucesso!')
-                else:
-                    print('\n\U0000274C Exclusão cancelada!')
-
-            else:
-                print('\n\U000026A0 Atenção! O valor inserido não é uma opção válida. Informe uma das opções: (s/n)\n')
-
-        decisao2 = input('\n\U0001F503 Deseja excluir um novo contato?(s/n): ').lower()
-
-        if decisao2 in opcoes_validas:
-            if decisao2 == 'n':
-                excluir_contato = False
-
+            print("\n===================================================================") 
+            print('\U0000274C Exclusão cancelada!')
+            print("===================================================================\n")
 
 ######
 
@@ -165,13 +218,19 @@ def listar_contato(agenda_telefonica):
 
 ######
 
+def cria_lista(agenda_telefonica):
+    # Criando um arquivo "Contatos.txt" quando o usuário sair.
+    with open('Contatos.txt', 'w') as file1:
+        # Adicionando os contatos nessa lista:
+        file1.write('\n--- Lista de Contatos ---\n')
 
-# 1.1 Validador de infos passadas
+        if len(agenda_telefonica) == 0:
+            file1.write('\U0001F622 Agenda vazia!')
 
-def validador_numero(numero):
-    return numero.isdigit() and numero >= 11 
-
-def validador_email(email):
-    return '@' in email and '.' in email.split('@')[-1] 
-
-
+        else:
+            for numeracao, chave in enumerate(agenda_telefonica.keys(), start=1):
+                file1.write('\n-----------------------------------------------------------------------\n')
+                file1.write(f'\t{numeracao} - {chave}')
+                for sub_chave, sub_valor in agenda_telefonica[chave].items():
+                    file1.write(f'\t{sub_chave}: {sub_valor}')
+                file1.write('\n-----------------------------------------------------------------------\n')

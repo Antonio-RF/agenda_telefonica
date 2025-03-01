@@ -2,6 +2,7 @@ from funcs import adicionar_contato
 from funcs import alterar_contato
 from funcs import remover_contato
 from funcs import listar_contato
+from funcs import cria_lista
 
 banner = '''
     ================================
@@ -58,6 +59,8 @@ while True:
         
     if action == 5:
         print('\n\U0001F44B Obrigado por usar a agenda! Até logo!')
+        print("Todos os contatos foram salvos no arquivo Contatos.txt!")
+        cria_lista(agenda_telefonica)
         print('Saindo...')
         break
 
