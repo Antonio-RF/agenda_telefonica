@@ -1,4 +1,15 @@
+# 1.1 Validador de infos passadas
 
+def validador_numero(numero):
+    # Conferindo se é um número válido.
+    #   1. Ter somente dígitos.
+    #   2. Ter EXATAMENTE 11 números, considerando somente números do Brasil.
+    return numero.isdigit() and len(str(numero)) == 11 
+
+def validador_email(email):
+    return '@' in email and '.' in email.split('@')[-1] 
+
+######
 
 # 1. Adicionar contato
 
@@ -14,7 +25,8 @@ def adicionar_contato(agenda_telefonica):
             contato['Número'] = numero 
             erro = False
         else:
-            print('\n\U000026A0 O número celular deve conter apenas dígitos e não exceder o tamanho máximo de 11 caracteres.')
+            print('\n\U000026A0 O número celular deve conter apenas dígitos e ter exatamente 11 caracteres(DDD+Número).\n')
+            print('Exemplo de entrada: 41999999999')
 
 
     erro = True
